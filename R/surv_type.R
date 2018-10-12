@@ -5,7 +5,9 @@
 #' Tick Survival Data Intake function
 #'
 #' This funciton reads the raw csv file containing tick survival data
-#' from the Cary institute survival experiments (soil cores)
+#' from the Cary institute survival experiments (soil cores) and transforms
+#' the data to be fed to JAGS
+#'
 #' @param file Path to CSV
 #' @param season "winter" or "summer"
 #' @param winter.start date when winter season starts "yyyy-mm-dd"
@@ -20,6 +22,7 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
 
   rawdata <- read.csv(file)
   dat <- rawdata
+  dat$Bin <- 1:nrow(dat) # create column that is just row numbers
 
   dat$Site <- as.numeric(dat$Site)  # convert site to numeric IDs
 
@@ -46,35 +49,61 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
     dat <- dat[over.summer,]   # all summer data
   }
 
-  dat <- subset(dat, N_Recovered > 0)      # subset only cores where ticks recovered
+  #dat <- subset(dat, N_Recovered > 0)      # subset only cores where ticks recovered
   dat <- subset(dat, Stage == life.stage)       # subset life stage
   dat <- subset(dat, Flat_Fed == flat.fed)      # subset flat or fed ticks
   dat <- subset(dat, Animal_Disturbance == "N") # subset no animal disutbance
   dat <- subset(dat, Tick_Source == "NY")       # subset only ticks from NY
 
-  dat <- dat[,c("Site",
-                "Date_Deployed",
-                "Date_Retrieved",
-                "N_Deployed",
-                "N_Recovered",
-                "N_Recovered_Engorged",
-                "N_Recovered_Molted",
-                "N_Molted_After",
-                "N_Survived")]
-
-  dat[is.na(dat)] <- 0  # convert remaining NAs to 0
-
-  N_Molted_Total <- vector()
-  for(j in 1:nrow(dat)){
-    N_Molted_Total[j] <- dat$N_Recovered_Molted[j] + dat$N_Molted_After[j]
-  }
-
-  dat <- cbind(dat, N_Molted_Total)
+  # sequence of all days within range of subsetted data
+  days.seq <- seq.Date(min(dat$Date_Deployed),
+                       max(dat$Date_Retrieved), 1)
 
   # Number of days in soil
-  N_Days <- difftime(dat$Date_Retrieved, dat$Date_Deployed)
+  N_Days <- as.numeric(difftime(dat$Date_Retrieved, dat$Date_Deployed))
 
-  dat <- cbind(dat, N_Days)
+  # create matrix
+  core.mat <- matrix(0,nrow(dat),length(days.seq))
+  colnames(core.mat) <- as.character(days.seq)
 
-  return(dat)
+  # convert date to character
+  deploy.date <- as.character(dat$Date_Deployed)
+  retrieve.date <- as.character(dat$Date_Retrieved)
+
+  # fill in core matrix and create indexing variable for start date
+  start.index <- vector(length = length(deploy.date))
+  for(t in 1:length(deploy.date)){
+    n.deploy <- dat[t,"N_Deployed"]                  # number deployed
+    deploy.col <- which(deploy.date[t]==days.seq)    # date in sequence it was deployed
+    core.mat[t,deploy.col] <- n.deploy               # assign to corresponding column
+
+    n.recovered <- dat[t,"N_Recovered"]                # number recovered
+    recovered.col <- which(retrieve.date[t]==days.seq) # date in seq it was recovered
+    core.mat[t,recovered.col] <- n.recovered           # assing to corresponding column
+
+    start.index[t] <- deploy.col   # indexing variable for deploy date
+  }
+
+  # JAGS data for flat ticks
+  if(flat.fed == "Flat"){
+    data = list(y = core.mat,
+                start.index = start.index,
+                N_days = N_Days,
+                site.id = dat$Site,
+                N = nrow(dat))
+  }
+  # JAGS data for fed ticks (includes number successfully molted)
+  if(flat.fed == "Fed"){
+    data = list(y = core.mat,
+                start.index = start.index,
+                N_days = N_Days,
+                site.id = dat$Site,
+                N = nrow(dat),
+                N_Molted = dat$N_Survived)
+  }
+
+  return(data)
 }
+
+
+
