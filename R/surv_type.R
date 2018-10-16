@@ -68,8 +68,8 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
                 N_days = N_Days,
                 site.index = dat$Site,
                 N = nrow(dat),
-                sites <- unique(dat$Site),
-                N_site <- length(unique(dat$Site)))
+                sites = unique(dat$Site),
+                N_site = length(unique(dat$Site)))
   }
   # JAGS data for fed ticks (includes number successfully molted)
   if(flat.fed == "Fed"){
@@ -77,8 +77,8 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
                 N_days = N_Days,
                 site.id = dat$Site,
                 N = nrow(dat),
-                sites <- unique(dat$Site),
-                N_site <- length(unique(dat$Site)))
+                sites = unique(dat$Site),
+                N_site = length(unique(dat$Site)))
   }
 
   return(data)
