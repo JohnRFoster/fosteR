@@ -27,12 +27,14 @@ Allan_surv <- function(path = "", life.stage){
   nymph <- apply(nymph[-1,], 2, as.numeric) # data
   N_days <- length(seq.Date(date[1], date[length(date)], 1)) # total number of days
   days.diff <- as.numeric(diff(date)) # days between census's
+  site.index <- 1:nrow(nymph)
 
   data <- list(y = nymph,
                N = nrow(nymph),
                census = ncol(nymph),
                N_days = N_days,
-               delta.days = days.diff)
+               delta.days = days.diff,
+               site.index = site.index)
 
   return(data)
 
@@ -48,12 +50,14 @@ Allan_surv <- function(path = "", life.stage){
   adult <- adult[-6,] # remove site 6; data inconsistent
   N_days <- length(seq.Date(date[1], date[length(date)], 1)) # total number of days
   days.diff <- as.numeric(diff(date)) # days between census's
+  site.index <- 1:nrow(adult) # site index
 
   data <- list(y = adult,
                N = nrow(adult),
                census = ncol(adult),
                N_days = N_days,
-               delta.days = days.diff)
+               delta.days = days.diff,
+               site.index = site.index)
 
   return(data)
   }
