@@ -30,8 +30,8 @@ ch_cary <- function(grid, path = ""){
 
   smam[4:5] <- as.integer(!is.na(smam[4:5]))          # converts trap histories to 1 or 0
 
-  smam$Full.Date.1 <- ymd(smam$Full.Date.1)           # convert factors to dates
-  smam$Full.Date.2 <- ymd(smam$Full.Date.2)           # convert factors to dates
+  smam$Full.Date.1 <- as.Date(smam$Full.Date.1)           # convert factors to dates
+  smam$Full.Date.2 <- as.Date(smam$Full.Date.2)           # convert factors to dates
 
   m <- subset(smam, Grid == grid)
   m <- m[,c("Tag..", "Day.1", "Day.2", "Full.Date.1", "Full.Date.2")]
@@ -63,6 +63,4 @@ ch_cary <- function(grid, path = ""){
   colnames(ch.base) <- days
   return(ch.base)
 }
-##----------------------##
-##     End Function     ##
-##----------------------##
+

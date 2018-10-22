@@ -26,7 +26,7 @@ Allan_surv <- function(path = "", life.stage){
   date <- as.Date(date, "%m/%d/%Y") # date of census
   nymph <- apply(nymph[-1,], 2, as.numeric) # data
   N_days <- length(seq.Date(date[1], date[length(date)], 1)) # total number of days
-  days.diff <- as.numeric(diff(date)) # days between census's
+  days.diff <- cumsum(as.numeric(diff(date))) # days between census's
   site.index <- 1:nrow(nymph)
 
   data <- list(y = nymph,
@@ -49,7 +49,7 @@ Allan_surv <- function(path = "", life.stage){
   adult <- apply(adult[-1,], 2, as.numeric) # data
   adult <- adult[-6,] # remove site 6; data inconsistent
   N_days <- length(seq.Date(date[1], date[length(date)], 1)) # total number of days
-  days.diff <- as.numeric(diff(date)) # days between census's
+  days.diff <- cumsum(as.numeric(diff(date))) # days between census's
   site.index <- 1:nrow(adult) # site index
 
   data <- list(y = adult,
