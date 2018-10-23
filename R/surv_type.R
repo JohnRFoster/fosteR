@@ -24,6 +24,8 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
   dat <- rawdata
   dat$Bin <- 1:nrow(dat) # create column that is just row numbers
 
+  dat$Site <- as.numeric(dat$Site)  # convert site to numeric IDs
+
   # convert from factor to date
   dat$Date_Deployed <- as.Date(as.character(dat$Date_Deployed), "%m/%d/%Y")
   dat$Date_Retrieved <- as.Date(as.character(dat$Date_Retrieved), "%m/%d/%Y")
@@ -59,8 +61,6 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
 
   # Number of days in soil
   N_Days <- as.numeric(difftime(dat$Date_Retrieved, dat$Date_Deployed))
-
-  dat$Site <- as.numeric(dat$Site)  # convert site to numeric IDs
 
   # JAGS data for flat ticks
   if(flat.fed == "Flat"){
