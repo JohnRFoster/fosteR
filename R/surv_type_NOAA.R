@@ -121,7 +121,7 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
                 N_days = N_Days,
                 site.index = dat$Site,
                 N = nrow(dat),
-                start.date = start.index,
+                start.index = start.index,
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)),
                 met = met.x)
@@ -132,7 +132,7 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
                 N_days = N_Days,
                 site.id = dat$Site,
                 N = nrow(dat),
-                start.date = start.index,
+                start.index = start.index,
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)),
                 met = met.x)
