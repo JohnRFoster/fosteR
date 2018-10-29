@@ -130,7 +130,7 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
   if(flat.fed == "Fed"){
     data = list(y = cbind(dat$N_Deployed, dat$N_Survived),
                 N_days = N_Days,
-                site.id = dat$Site,
+                site.index = dat$Site,
                 N = nrow(dat),
                 start.index = start.index,
                 sites = unique(dat$Site),

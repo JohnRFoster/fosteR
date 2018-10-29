@@ -49,7 +49,6 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
     dat <- dat[over.summer,]   # all summer data
   }
 
-  #dat <- subset(dat, N_Recovered > 0)      # subset only cores where ticks recovered
   dat <- subset(dat, Stage == life.stage)       # subset life stage
   dat <- subset(dat, Flat_Fed == flat.fed)      # subset flat or fed ticks
   dat <- subset(dat, Animal_Disturbance == "N") # subset no animal disutbance
@@ -75,12 +74,11 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
   if(flat.fed == "Fed"){
     data = list(y = cbind(dat$N_Deployed, dat$N_Survived),
                 N_days = N_Days,
-                site.id = dat$Site,
+                site.index = dat$Site,
                 N = nrow(dat),
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)))
   }
-
   return(data)
 }
 
