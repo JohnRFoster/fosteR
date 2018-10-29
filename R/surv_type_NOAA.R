@@ -141,15 +141,3 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
 }
 
 
-winter.start <- "2017-10-01"
-winter.end <- "2018-05-31"
-life.stage <- "Nymph"
-flat.fed <- "Flat"
-season <- "summer"
-
-test <- surv_type_NOAA(file,
-                  season,
-                  winter.start,
-                  winter.end,
-                  life.stage,
-                  flat.fed)
