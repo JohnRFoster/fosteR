@@ -4,7 +4,8 @@
 
 #' Tick Survival Data Intake function
 #'
-#' This funciton reads the raw csv file containing tick survival data
+#' This funciton is a wrapper around the surv_type function that also reads in
+#' NOAA data and reads the raw csv file containing tick survival data
 #' from the Cary institute survival experiments (soil cores) and transforms
 #' the data to be fed to JAGS
 #'
@@ -18,13 +19,11 @@
 #' @examples surv.type(file, "summer", "2017-10-01", "2018-05-31", "Nymph", "Flat")
 
 
-surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.fed){
+surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, flat.fed){
 
   rawdata <- read.csv(file)
   dat <- rawdata
   dat$Bin <- 1:nrow(dat) # create column that is just row numbers
-
-  #dat$Site <- as.numeric(dat$Site)  # convert site to numeric IDs
 
   # convert from factor to date
   dat$Date_Deployed <- as.Date(as.character(dat$Date_Deployed), "%m/%d/%Y")
@@ -86,7 +85,10 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
                                    colnames(met.cl),
                                    c("CL", "FD", "WP")))
 
-  met.x <- array(data = NA,dim = c(3,nrow(dat),length(days.seq)))
+  met.x <- array(data = NA,dim = c(3,nrow(dat),length(days.seq)),
+                 dimnames = list(c("Tmax","Tmin","precip"),
+                                 as.character(dat$TC_ID),
+                                 as.character(days.seq)))
 
   ## met.x dimensions:
     # dim 1 = met variable; index = m
@@ -98,14 +100,20 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
     end <- which(seq[length(seq)] == days.seq) # end index for column
     for(m in 1:ncol(met.cl)){
       for(t in start:end){
-        site.dim <-  which(dat$Site[c] == dimnames(met.all)[[3]])
-        row.dim <- which(seq[t] == dimnames(met.all)[[1]])
+        site.dim <- which(dat$Site[c] == dimnames(met.all)[[3]])
+        row.dim <- which(days.seq[t] == dimnames(met.all)[[1]])
         met.x[m,c,t] <- met.all[row.dim,m,site.dim]
       }
     }
   }
 
+  # indexing variable for when in sequence core was deployed
+  start.index <- vector()
+  for(i in 1:nrow(dat)){
+    start.index[i] <- which(dat$Date_Deployed[i] == days.seq)
+  }
 
+  dat$Site <- as.numeric(dat$Site)  # convert site to numeric IDs
 
   # JAGS data for flat ticks
   if(flat.fed == "Flat"){
@@ -113,8 +121,10 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
                 N_days = N_Days,
                 site.index = dat$Site,
                 N = nrow(dat),
+                start.date = start.index,
                 sites = unique(dat$Site),
-                N_site = length(unique(dat$Site)))
+                N_site = length(unique(dat$Site)),
+                met = met.x)
   }
   # JAGS data for fed ticks (includes number successfully molted)
   if(flat.fed == "Fed"){
@@ -122,8 +132,10 @@ surv_type <- function(file, season, winter.start, winter.end, life.stage, flat.f
                 N_days = N_Days,
                 site.id = dat$Site,
                 N = nrow(dat),
+                start.date = start.index,
                 sites = unique(dat$Site),
-                N_site = length(unique(dat$Site)))
+                N_site = length(unique(dat$Site)),
+                met = met.x)
   }
   return(data)
 }
@@ -134,3 +146,10 @@ winter.end <- "2018-05-31"
 life.stage <- "Nymph"
 flat.fed <- "Flat"
 season <- "summer"
+
+test <- surv_type_NOAA(file,
+                  season,
+                  winter.start,
+                  winter.end,
+                  life.stage,
+                  flat.fed)
