@@ -117,6 +117,7 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
 
   # indexing variable for when in sequence core was deployed
   start.index <- vector()
+  end.index <- vector()
   for(i in 1:nrow(dat)){
     start.index[i] <- which(dat$Date_Deployed[i] == days.seq)
     end.index[i] <- which(dat$Date_Retrieved[i] == days.seq)
