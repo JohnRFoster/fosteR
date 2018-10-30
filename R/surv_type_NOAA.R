@@ -76,6 +76,13 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
   met.fd <- met.fd[,3:5]
   met.wp <- met.wp[,3:5]
 
+  met.cl$tmax <- scale(met.cl$tmax, scale = FALSE)
+  met.cl$tmin <- scale(met.cl$tmin, scale = FALSE)
+  met.fd$tmax <- scale(met.fd$tmax, scale = FALSE)
+  met.fd$tmin <- scale(met.fd$tmin, scale = FALSE)
+  met.wp$tmax <- scale(met.wp$tmax, scale = FALSE)
+  met.wp$tmin <- scale(met.wp$tmin, scale = FALSE)
+
   # all met array
     # dim 1 = date
     # dim 2 = met variable
@@ -112,6 +119,7 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
   start.index <- vector()
   for(i in 1:nrow(dat)){
     start.index[i] <- which(dat$Date_Deployed[i] == days.seq)
+    end.index[i] <- which(dat$Date_Retrieved[i] == days.seq)
   }
 
   dat$Site <- as.numeric(dat$Site)  # convert site to numeric IDs
@@ -123,6 +131,7 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
                 site.index = dat$Site,
                 N = nrow(dat),
                 start.index = start.index,
+                end.index = end.index,
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)),
                 met = met.x)
@@ -134,6 +143,7 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
                 site.index = dat$Site,
                 N = nrow(dat),
                 start.index = start.index,
+                end.index = end.index,
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)),
                 met = met.x)
