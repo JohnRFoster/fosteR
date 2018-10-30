@@ -52,6 +52,7 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
   dat <- subset(dat, Flat_Fed == flat.fed)      # subset flat or fed ticks
   dat <- subset(dat, Animal_Disturbance == "N") # subset no animal disutbance
   dat <- subset(dat, Tick_Source == "NY")       # subset only ticks from NY
+  dat <- subset(dat, !is.na(dat$N_Recovered))   # subset ticks with conflicting info in N_Recovered
 
   # Number of days in soil
   N_Days <- as.numeric(difftime(dat$Date_Retrieved, dat$Date_Deployed))
@@ -139,5 +140,4 @@ surv_type_NOAA <- function(file, season, winter.start, winter.end, life.stage, f
   }
   return(data)
 }
-
 
