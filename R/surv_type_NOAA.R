@@ -23,7 +23,6 @@ surv_type_NOAA <- function(file, subset, season = NULL){
   dat$Bin <- 1:nrow(dat) # create column that is just row numbers
 
   dat$Deployment_Name <- as.character(dat$Deployment_Name)
-  dat$Site <- as.numeric(dat$Site)  # convert site to numeric IDs
 
   # convert from factor to date
   dat$Date_Deployed <- as.Date(as.character(dat$Date_Deployed), "%m/%d/%Y")
@@ -145,4 +144,5 @@ surv_type_NOAA <- function(file, subset, season = NULL){
   return(data)
 }
 
-
+file <- "../NEFI_tick/Cary_Larvae_Nymph_Surv.csv"
+subset <- "Overwintering Nymph"
