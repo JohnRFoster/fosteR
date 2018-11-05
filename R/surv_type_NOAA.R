@@ -124,7 +124,6 @@ surv_type_NOAA <- function(file, subset, season = NULL){
                 site.index = dat$Site,
                 N = nrow(dat),
                 start.index = start.index,
-                end.index = end.index,
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)),
                 met = met.x)
@@ -136,7 +135,6 @@ surv_type_NOAA <- function(file, subset, season = NULL){
                 site.index = dat$Site,
                 N = nrow(dat),
                 start.index = start.index,
-                end.index = end.index,
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)),
                 met = met.x)
@@ -144,5 +142,4 @@ surv_type_NOAA <- function(file, subset, season = NULL){
   return(data)
 }
 
-file <- "../NEFI_tick/Cary_Larvae_Nymph_Surv.csv"
-subset <- "Overwintering Nymph"
+
