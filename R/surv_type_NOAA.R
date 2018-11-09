@@ -130,6 +130,14 @@ surv_type_NOAA <- function(file, subset, season = NULL){
   precip.mis.index <- apply(precip.mis,1,function(x) all(is.na(x)))
   precip.mis.index <- which(precip.mis.index == FALSE)
   N_precip.mis <- length(precip.mis.index)
+  N_precip.mis.col <- vector()
+  for(i in 1:N_precip.mis){
+    if(all(!is.na(precip.mis[i,]))){
+      N_precip.mis.col[i] <- ncol(precip.mis)
+    } else {
+      N_precip.mis.col[i] <- min(which(is.na(precip.mis[i,]))) - 1
+    }
+  }
 
   dat$Site <- as.numeric(dat$Site)  # convert site to numeric IDs
 
@@ -147,6 +155,7 @@ surv_type_NOAA <- function(file, subset, season = NULL){
                 precip.mis = precip.mis,
                 precip.mis.index = precip.mis.index,
                 N_precip.mis = N_precip.mis,
+                N_precip.mis.col,
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)),
                 met = met.x)
@@ -163,6 +172,7 @@ surv_type_NOAA <- function(file, subset, season = NULL){
                 precip.mis.index = precip.mis.index,
                 N_precip.mis = N_precip.mis,
                 sites = unique(dat$Site),
+                N_precip.mis.col,
                 N_site = length(unique(dat$Site)),
                 met = met.x)
   }
