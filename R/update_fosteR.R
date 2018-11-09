@@ -9,7 +9,7 @@
 
 
 
-update_fosteR <- function(){
+update_fosteR <- function(force = FALSE){
   library(devtools)
-  install_github("JohnRFoster/fosteR")
+  install_github("JohnRFoster/fosteR",force = force)
 }
