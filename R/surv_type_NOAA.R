@@ -106,11 +106,30 @@ surv_type_NOAA <- function(file, subset, season = NULL){
     }
   }
 
-  # indexing variable for when in sequence core was deployed
+  # indexing variables for when in sequence core was deployed and retrieved
   start.index <- vector()
+  end.index <- vector()
   for(i in 1:nrow(dat)){
     start.index[i] <- which(dat$Date_Deployed[i] == days.seq)
+    end.index[i] <- which(dat$Date_Retrieved[i] == days.seq)
   }
+
+  # data frame and indexing vector for missing precip data
+  precip.mis <- data.frame(NA,nrow(dat),max(N_Days))
+  for(i in 1:nrow(dat)){
+    # find what dates have NAs for precip
+    which.na <- which(is.na(met.x[3,i,start.index[i]:end.index[i]]))
+    for(t in 1:length(which.na)){
+      if(length(which.na) > 0){
+      precip.mis[i,t] <- which.na[t] # assign columns date index of missing precip
+      } else {
+        precip.mis[i,] <- NA # if core has no missing precip assign row all NAs
+      }
+    }
+  }
+  precip.mis.index <- apply(precip.mis,1,function(x) all(is.na(x)))
+  precip.mis.index <- which(precip.mis.index == FALSE)
+  N_precip.mis <- length(precip.mis.index)
 
   dat$Site <- as.numeric(dat$Site)  # convert site to numeric IDs
 
@@ -124,6 +143,10 @@ surv_type_NOAA <- function(file, subset, season = NULL){
                 site.index = dat$Site,
                 N = nrow(dat),
                 start.index = start.index,
+                end.index = end.index,
+                precip.mis = precip.mis,
+                precip.mis.index = precip.mis.index,
+                N_precip.mis = N_precip.mis,
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)),
                 met = met.x)
@@ -135,6 +158,10 @@ surv_type_NOAA <- function(file, subset, season = NULL){
                 site.index = dat$Site,
                 N = nrow(dat),
                 start.index = start.index,
+                end.index = end.index,
+                precip.mis = precip.mis,
+                precip.mis.index = precip.mis.index,
+                N_precip.mis = N_precip.mis,
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)),
                 met = met.x)
