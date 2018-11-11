@@ -155,7 +155,7 @@ surv_type_NOAA <- function(file, subset, season = NULL){
                 precip.mis = precip.mis,
                 precip.mis.index = precip.mis.index,
                 N_precip.mis = N_precip.mis,
-                N_precip.mis.col,
+                N_precip.mis.col = N_precip.mis.col,
                 sites = unique(dat$Site),
                 N_site = length(unique(dat$Site)),
                 met = met.x)
@@ -172,7 +172,7 @@ surv_type_NOAA <- function(file, subset, season = NULL){
                 precip.mis.index = precip.mis.index,
                 N_precip.mis = N_precip.mis,
                 sites = unique(dat$Site),
-                N_precip.mis.col,
+                N_precip.mis.col = N_precip.mis.col,
                 N_site = length(unique(dat$Site)),
                 met = met.x)
   }
