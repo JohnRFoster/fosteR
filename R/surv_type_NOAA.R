@@ -131,7 +131,7 @@ surv_type_NOAA <- function(file, subset, season = NULL){
   precip.mis.index <- which(precip.mis.index == FALSE)
   N_precip.mis <- length(precip.mis.index)
   N_precip.mis.col <- vector()
-  for(i in 1:N_precip.mis){
+  for(i in 1:nrow(precip.mis)){
     if(all(!is.na(precip.mis[i,]))){
       N_precip.mis.col[i] <- ncol(precip.mis)
     } else {
@@ -177,4 +177,5 @@ surv_type_NOAA <- function(file, subset, season = NULL){
   return(data)
 }
 
-
+file <- "../NEFI_tick/Cary_Larvae_Nymph_Surv.csv"
+subset <- "Fed Nymph"
