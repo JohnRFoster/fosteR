@@ -14,7 +14,7 @@
 
 tick_cary <- function(grid, type, path = ""){
 
-  file <- "tick_cleaned.csv"
+  file <- "tick_cleaned"
   t <- read.csv(paste(path, file, sep = ""))                   # read file
   t <- subset(t, Grid == grid)                                # subset grid
   d <- t$DATE
