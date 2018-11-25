@@ -12,7 +12,8 @@
 #' @param sites character vector of sites to estimate
 #' @export
 #' @examples ## to estimate every week
-#' @examples cary_ticks_JAGS(sites = c("Green Control","Henry Control","Tea Control"),state.null = 7)
+#' @examples ## sites = c("Green Control","Henry Control","Tea Control")
+#' @examples cary_ticks_JAGS(sites = sites,state.null = 7)
 
 
 cary_ticks_JAGS <- function(sites, state.interval=NULL){
