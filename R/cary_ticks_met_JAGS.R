@@ -135,7 +135,7 @@ cary_ticks_met_JAGS <- function(sites, state.interval=NULL){
       rh.mis[t,i] <- na[t]
     }
   }
-  rh.mis <- temp.mis[complete.cases(rh.mis),]
+  rh.mis <- rh.mis[complete.cases(rh.mis),]
   data <- list(y = all.tick,
                dt.index = dt.index.mat,
                df = df.mat,
