@@ -16,7 +16,7 @@
 #' @examples cary_ticks_JAGS(sites = sites,state.null = 7)
 
 
-cary_ticks_JAGS <- function(sites, state.interval=NULL){
+cary_ticks_met_JAGS <- function(sites, state.interval=NULL){
   N_site <- length(sites)               # number of sites
   raw.dat <- read.csv("tick_cleaned")   # read in data
   raw.dat$DATE <- as.Date(raw.dat$DATE) # convert to date
