@@ -31,7 +31,7 @@ combine_rjags <- function(path, chain.num, start = 1, end, thin = NULL){
     }
   }
   jags.out <- as.mcmc(chains)
-
+  return(jags.out)
 }
 
 
