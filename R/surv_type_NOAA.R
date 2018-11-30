@@ -138,6 +138,7 @@ surv_type_NOAA <- function(file, subset, season = NULL){
       N_precip.mis.col[i] <- min(which(is.na(precip.mis[i,]))) - 1
     }
   }
+  N_precip.mis.col <- N_precip.mis.col[which(N_precip.mis.col>0)]
 
   dat$Site <- as.numeric(dat$Site)  # convert site to numeric IDs
 
