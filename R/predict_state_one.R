@@ -102,6 +102,10 @@ predict_state_one <- function(type, params, ic, Nmc, s, draw,
     SIGMA[3,1,] <- params[draw,"SIGMA[3,1]"]
     SIGMA[3,2,] <- params[draw,"SIGMA[3,2]"]
     SIGMA[3,3,] <- params[draw,"SIGMA[3,3]"]
+
+    for(i in 1:Nmc){
+      SIGMA <- solve(SIGMA[,,i])
+    }
   }
 
   # run mcmc sampling
@@ -128,7 +132,7 @@ predict_state_one <- function(type, params, ic, Nmc, s, draw,
       a <- IC[m, paste("x[3,",t,",",s,"]",sep="")]
       obs <- as.matrix(c(l,n,a),3,1)
       Ex <- TRANS %*% obs
-      est.mvnorm <- rmvnorm(1,Ex,solve(SIGMA[,,m]))
+      est.mvnorm <- rmvnorm(1,Ex,SIGMA[,,m])
       pred[1,t,m] <- max(est.mvnorm[1], 0)
       pred[2,t,m] <- max(est.mvnorm[2], 0)
       pred[3,t,m] <- max(est.mvnorm[3], 0)
