@@ -32,8 +32,8 @@ mna_tick_current <- function(sites = c("Green Control","Henry Control","Tea Cont
   }
   out <- matrix(NA, 3, length(mna[[which.max(lengths(mna))]]))
   for(i in 1:length(sites)){
-    for(j in 1:length(mna.test[[i]]))
-      out[i,j] <- mna.test[[i]][j]
+    for(j in 1:length(mna[[i]]))
+      out[i,j] <- mna[[i]][j]
   }
   return(out)
 }
