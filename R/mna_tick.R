@@ -12,26 +12,28 @@
 #' @export
 #' @example mna_tick()
 
-mna_tick <- function(tick.date, mouse.date, known.states){
-  # tick.date = vector of tick sampling dates
-  # mouse.date = vector of mice sampling dates
-  # known.states = known states matrix
-
-  # this function matches the mna for a given site
-  # to the closest tick sampling date in the past
-
-  mna <- apply(known.states, 2, sum)
-  tick.mna <- vector()
-  for(t in 1:length(dates.tick)){
-    xx <- which(abs(dates.tick[t]-dates.mouse) == min(abs(dates.tick[t]-dates.mouse)))
-    if(dates.mouse[xx] > dates.tick[t]){
-      yy <- dates.mouse[1:(xx-1)]
-      zz <- which(abs(dates.tick[t]-yy) == min(abs(dates.tick[t]-yy)))
-      aa <- as.character(dates.mouse[zz])
-    } else {
-      aa <- as.character(dates.mouse[xx])
+mna_tick_current <- function(sites = c("Green Control","Henry Control","Tea Control")){
+  minpositive <- function(x) min(x[x > 0])
+  mna <- list()
+  for(i in 1:length(sites)){
+    tick <- tick_cary(sites[i], "individual")
+    ch <- suppressWarnings(ch_cary(sites[i]))
+    ks <- known_states(ch)
+    tick.dates <- as.Date(colnames(tick))
+    tick.seq <- seq.Date(tick.dates[1],tick.dates[length(tick.dates)],1)
+    mouse.dates <- as.Date(colnames(ks))
+    mna.obs <- apply(ks, 2, sum)
+    mna.x <- vector()
+    for(j in 1:length(tick.seq)){
+      close.date <- which(tick.seq[j]-mouse.dates == minpositive(tick.seq[j]-mouse.dates))
+      mna.x[j] <- mna.obs[close.date]
     }
-    tick.mna[t] <- mna[aa][[1]]
+    mna[[i]] <- mna.x
   }
-  return(tick.mna)
+  out <- matrix(NA, 3, length(mna[[which.max(lengths(mna))]]))
+  for(i in 1:length(sites)){
+    for(j in 1:length(mna.test[[i]]))
+      out[i,j] <- mna.test[[i]][j]
+  }
+  return(out)
 }
