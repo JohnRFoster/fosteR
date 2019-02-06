@@ -152,9 +152,9 @@ predict_state_one_met <- function(type, driver, params, ic, obs, Nmc, s, draw,
       } else {
         for(d in 1:df[t]){
           if(d == 1){
-            TRANS <- A[,,dt.index[t]] %*% A[,,dt.index[t]+1]
+            TRANS <- A[,,dt.index[t-1]] %*% A[,,dt.index[t-1]+1]
           } else {
-            TRANS <- TRANS %*% A[,,dt.index[t]+d]
+            TRANS <- TRANS %*% A[,,dt.index[t-1]+d]
           }
         }
       }
