@@ -20,11 +20,11 @@
 #' @examples predict_state_one("parameter","temp",as.matrix(out$params),as.matrix(out$predict),500,2,sample.int(nrow(as.matrix(out$params)), 500, replace = TRUE))
 
 
-predict_state_one_met <- function(type, driver, params, ic, Nmc, s, draw,
+predict_state_one_met <- function(type, driver, params, ic, obs, Nmc, s, draw,
                                       sites = c("Green Control","Henry Control","Tea Control")){
 
   # call data from model run for storage dimensions and indexing
-  data <- cary_ticks_met_JAGS(sites)
+  data <- obs
   N_est <- data$N_est[s]
   df <- data$df[s,]
   dt.index <- data$dt.index[s,]
