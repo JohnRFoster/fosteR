@@ -19,79 +19,62 @@
 #' @examples predict_state_one("parameter",as.matrix(out$params),as.matrix(out$predict),500,2,sample.int(nrow(as.matrix(out$params)), 500, replace = TRUE))
 
 
-predict_state_one <- function(type, params, ic, Nmc, s, draw,
-                          sites = c("Green Control","Henry Control","Tea Control")){
+predict_state_one <- function(type, site, params, ic, data, Nmc, draw){
 
   # call data from model run for storage dimensions and indexing
-  data <- cary_ticks_JAGS(sites)
-  N_est <- data$N_est
-  df <- data$df
+  if(site == "Green Control"){
+    N_est <- data$N_est[1]
+    N_days <- data$N_days[1]
+    dt.index <- data$dt.index[1,]
+    df <- data$df[1,]
+  } else if(site == "Henry Control"){
+    N_est <- data$N_est[2]
+    N_days <- data$N_days[2]
+    dt.index <- data$dt.index[2,]
+    df <- data$df[2,]
+  } else {
+    N_est <- data$N_est[3]
+    N_days <- data$N_days[3]
+    dt.index <- data$dt.index[3,]
+    df <- data$df[3,]
+  }
 
   # storage
-  pred <- array(dim = c(3,N_est[s],Nmc))
-  A <- matrix(0,3,3)
+  pred <- array(dim = c(3,N_est,Nmc))
+  A <- array(0, dim=c(3,3,N_days))
 
   # mean parameters
   param.mean <- apply(params, 2, mean)
 
   # select appropriate initial conditions
-  if(type == "deterministic"){
-    IC <- t(as.matrix(apply(ic, 2, mean)))
-  } else {
+  if("ic" %in% type){
     IC <- ic[draw,]
+  } else {
+    IC.mean <- apply(ic, 2, mean)
+    IC.names <- names(IC.mean)
+    IC <- matrix(IC.mean, Nmc, ncol = length(IC.mean), byrow = TRUE)
+    colnames(IC) <- IC.names
   }
 
   # select appropriate parameters
-  if(type == "deterministic" | type == "ic"){
-    phi.l.mu <- rep(param.mean["phi.l.mu"], Nmc)
-    phi.n.mu <- rep(param.mean["phi.n.mu"], Nmc)
-    phi.a.mu <- rep(param.mean["phi.a.mu"], Nmc)
-    grow.ln.mu <- rep(param.mean["grow.ln.mu"], Nmc)
-    grow.na.mu <- rep(param.mean["grow.na.mu"], Nmc)
-    repro.mu <- rep(param.mean["repro.mu"], Nmc)
-  } else {
+  if("parameter" %in% type){
     phi.l.mu <- params[draw,"phi.l.mu"]
     phi.n.mu <- params[draw,"phi.n.mu"]
     phi.a.mu <- params[draw,"phi.a.mu"]
     grow.ln.mu <- params[draw,"grow.ln.mu"]
     grow.na.mu <- params[draw,"grow.na.mu"]
     repro.mu <- params[draw,"repro.mu"]
-  }
-
-  # select appropriate random effect error
-  if(type == "random effect"){
-    tau.11 <- 1/sqrt(params[draw,"tau.11"])
-    tau.22 <- 1/sqrt(params[draw,"tau.22"])
-    tau.33 <- 1/sqrt(params[draw,"tau.33"])
-    tau.13 <- 1/sqrt(params[draw,"tau.13"])
-    tau.21 <- 1/sqrt(params[draw,"tau.21"])
-    tau.32 <- 1/sqrt(params[draw,"tau.32"])
-    alpha.11 <- rnorm(Nmc, 0, tau.11)
-    alpha.22 <- rnorm(Nmc, 0, tau.22)
-    alpha.33 <- rnorm(Nmc, 0, tau.33)
-    alpha.13 <- rnorm(Nmc, 0, tau.13)
-    alpha.21 <- rnorm(Nmc, 0, tau.21)
-    alpha.32 <- rnorm(Nmc, 0, tau.32)
-  } else if(type == "process" | type == "parameter") {
-    alpha.11 <- params[draw,paste("alpha.11[",s,"]",sep = "")]
-    alpha.22 <- params[draw,paste("alpha.22[",s,"]",sep = "")]
-    alpha.33 <- params[draw,paste("alpha.33[",s,"]",sep = "")]
-    alpha.13 <- params[draw,paste("alpha.13[",s,"]",sep = "")]
-    alpha.21 <- params[draw,paste("alpha.21[",s,"]",sep = "")]
-    alpha.32 <- params[draw,paste("alpha.32[",s,"]",sep = "")]
   } else {
-    alpha.11 <- rep(param.mean[paste("alpha.11[",s,"]",sep = "")], Nmc)
-    alpha.22 <- rep(param.mean[paste("alpha.22[",s,"]",sep = "")], Nmc)
-    alpha.33 <- rep(param.mean[paste("alpha.33[",s,"]",sep = "")], Nmc)
-    alpha.13 <- rep(param.mean[paste("alpha.13[",s,"]",sep = "")], Nmc)
-    alpha.21 <- rep(param.mean[paste("alpha.21[",s,"]",sep = "")], Nmc)
-    alpha.32 <- rep(param.mean[paste("alpha.32[",s,"]",sep = "")], Nmc)
+    phi.l.mu <- rep(param.mean["phi.l.mu"], Nmc)
+    phi.n.mu <- rep(param.mean["phi.n.mu"], Nmc)
+    phi.a.mu <- rep(param.mean["phi.a.mu"], Nmc)
+    grow.ln.mu <- rep(param.mean["grow.ln.mu"], Nmc)
+    grow.na.mu <- rep(param.mean["grow.na.mu"], Nmc)
+    repro.mu <- rep(param.mean["repro.mu"], Nmc)
   }
 
   # select appropraite covariance matrix
-  if(type == "deterministic" | type == "ic" | type == "parameter"){
-    SIGMA <- array(0, dim = c(3,3,Nmc))
-  } else {
+  if("process" %in% type){
     SIGMA <- array(NA, dim = c(3,3,Nmc))
     SIGMA[1,1,] <- params[draw,"SIGMA[1,1]"]
     SIGMA[1,2,] <- params[draw,"SIGMA[1,2]"]
@@ -103,33 +86,46 @@ predict_state_one <- function(type, params, ic, Nmc, s, draw,
     SIGMA[3,2,] <- params[draw,"SIGMA[3,2]"]
     SIGMA[3,3,] <- params[draw,"SIGMA[3,3]"]
 
+    # convert from precision to standard dev
     for(i in 1:Nmc){
-      SIGMA <- solve(SIGMA[,,i])
+      SIGMA[,,i] <- solve(SIGMA[,,i])
     }
+  } else {
+    SIGMA <- array(0, dim = c(3,3,Nmc))
   }
 
   # run mcmc sampling
   for(m in 1:Nmc){
 
     # draw transition matrix
-    A[1,1] <- logit(phi.l.mu[m] + alpha.11[m])
-    A[1,3] <- exp(repro.mu[m] + alpha.13[m])
-    A[2,1] <- logit(grow.ln.mu[m] + alpha.21[m])
-    A[2,2] <- logit(phi.n.mu[m] + alpha.22[m])
-    A[3,2] <- logit(grow.na.mu[m] + alpha.32[m])
-    A[3,3] <- logit(phi.a.mu[m] + alpha.33[m])
+    A[1,1,] <- logit(phi.l.mu[m])
+    A[1,3,] <- exp(repro.mu[m])
+    A[2,1,] <- logit(grow.ln.mu[m])
+    A[2,2,] <- logit(phi.n.mu[m])
+    A[3,2,] <- logit(grow.na.mu[m])
+    A[3,3,] <- logit(phi.a.mu[m])
 
     ## aggrigate transition matricies
-    for(t in 1:(N_est[s]-1)){
-      TRANS <- A %*% A
-      for(d in 2:df[s,t]){
-        TRANS <- TRANS %*% A
+    for(t in 1:(N_est-1)){                 # loop over the number of sampling days - 1
+      if(t == 1){
+        TRANS <- A[,,1] %*% A[,,2]
+        for(d in 3:df[1]){
+          TRANS <- TRANS %*% A[,,d]
+        }
+      } else {
+        for(d in 1:df[t]){
+          if(d == 1){
+            TRANS <- A[,,dt.index[t-1]] %*% A[,,dt.index[t-1]+1]
+          } else {
+            TRANS <- TRANS %*% A[,,dt.index[t-1]+d]
+          }
+        }
       }
 
       ## initial condition
-      l <- IC[m, paste("x[1,",t,",",s,"]",sep="")]
-      n <- IC[m, paste("x[2,",t,",",s,"]",sep="")]
-      a <- IC[m, paste("x[3,",t,",",s,"]",sep="")]
+      l <- IC[m, paste("x[1,",t,"]",sep="")]
+      n <- IC[m, paste("x[2,",t,"]",sep="")]
+      a <- IC[m, paste("x[3,",t,"]",sep="")]
       obs <- as.matrix(c(l,n,a),3,1)
       Ex <- TRANS %*% obs
       est.mvnorm <- rmvnorm(1,Ex,SIGMA[,,m])
