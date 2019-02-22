@@ -4,9 +4,9 @@
 
 #' Predict next time step from current - met models (demographic params + random effects + fixed effect on temp/precip/relative humidity)
 #'
-#' This funciton takes output from the met mcmc tick models and makes predictions one
+#' This funciton takes output from the mna mcmc tick models and makes predictions one
 #' step at a time. It also partitions uncertainty into initial condition ("ic"), parameter
-#' ("parameter"), process ("process"), and random effects ("random effect")
+#' ("parameter"), process ("process"), and random effects ("random effect"), or any combination thereof.
 #'
 #' @param type Type of uncertainty to partition, one of "deterministic", "ic", "parameter", "process", or "random effects"
 #' @param site Site. One of "Green Control","Henry Control","Tea Control"

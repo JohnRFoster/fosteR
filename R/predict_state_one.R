@@ -6,7 +6,7 @@
 #'
 #' This funciton takes output from the null mcmc tick model and makes predictions one
 #' step at a time. It also partitions uncertainty into initial condition ("ic"), parameter
-#' ("parameter"), process ("process"), and random effects ("random effect")
+#' ("parameter"), process ("process"), and random effects ("random effect"), or any combination thereof.
 #'
 #' @param type Type of uncertainty to partition, one of "deterministic", "ic", "parameter", "process", or "random effects"
 #' @param site Site. One of "Green Control","Henry Control","Tea Control"
