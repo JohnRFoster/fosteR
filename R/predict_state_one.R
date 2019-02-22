@@ -9,14 +9,14 @@
 #' ("parameter"), process ("process"), and random effects ("random effect")
 #'
 #' @param type Type of uncertainty to partition, one of "deterministic", "ic", "parameter", "process", or "random effects"
+#' @param site Site. One of "Green Control","Henry Control","Tea Control"
+#' @param data Data used in model run.
 #' @param params matrix of parameters from mcmc: as.matrix(out$params)
 #' @param ic matrix of states estiamted from mcmc: as.matrix(out$predict)
 #' @param Nmc Number of random draws from mcmc output
-#' @param s Site. Numeric 1-3. Maps to "Green Control","Henry Control","Tea Control"
 #' @param draw Vector of randomly sampled row numbers from mcmc output
-#' @param sites Vector of sites used in model run, default are control sites: c("Green Control","Henry Control","Tea Control")
 #' @export
-#' @examples predict_state_one("parameter",as.matrix(out$params),as.matrix(out$predict),500,2,sample.int(nrow(as.matrix(out$params)), 500, replace = TRUE))
+#' @examples predict_state_one("parameter", "Green Control", as.matrix(out$params),as.matrix(out$predict),500,2,sample.int(nrow(as.matrix(out$params)), 500, replace = TRUE))
 
 
 predict_state_one <- function(type, site, params, ic, data, Nmc, draw){
