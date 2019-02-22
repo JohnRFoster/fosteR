@@ -13,6 +13,7 @@
 #' @param met.run Which driver was used? One "temp", "precip", "rh"
 #' @param params matrix of parameters from mcmc: as.matrix(out$params)
 #' @param ic matrix of states estiamted from mcmc: as.matrix(out$predict)
+#' @param data Data used in model run.
 #' @param Nmc Number of random draws from mcmc output
 #' @param draw Vector of randomly sampled row numbers from mcmc output
 #' @param sites Vector of sites used in model run, default are control sites: c("Green Control","Henry Control","Tea Control")
