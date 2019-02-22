@@ -33,13 +33,13 @@ predict_state_one_mna <- function(type, site, params, ic, data, Nmc, draw){
     N_days <- data$N_days[2]
     dt.index <- data$dt.index[2,]
     df <- data$df[2,]
-    data$mna <- data$mna[2,1:N_days]
+    mna <- data$mna[2,1:N_days]
   } else {
     N_est <- data$N_est[3]
     N_days <- data$N_days[3]
     dt.index <- data$dt.index[3,]
     df <- data$df[3,]
-    data$mna <- data$mna[3,1:N_days]
+    mna <- data$mna[3,1:N_days]
   }
 
   # storage
